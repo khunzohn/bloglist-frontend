@@ -6,9 +6,9 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-const create = async (blog, token) => { 
+const create = async (blog, token) => {
   const config = {
-    headers: { Authorization: `bearer ${token}`}
+    headers: { Authorization: `bearer ${token}` }
   }
   const response = await axios.post(baseUrl, blog, config)
   return response.data
@@ -16,7 +16,7 @@ const create = async (blog, token) => {
 
 const update = async (id, blog, token) => {
   const config = {
-    headers: { Authorization: `bearer ${token}`}
+    headers: { Authorization: `bearer ${token}` }
   }
   const response = await axios.put(`${baseUrl}/${id}`, blog, config)
   return response.data
@@ -24,10 +24,10 @@ const update = async (id, blog, token) => {
 
 const remove = async (id, token) => {
   const config = {
-    headers: { Authorization: `bearer ${token}`}
+    headers: { Authorization: `bearer ${token}` }
   }
   const response = await axios.delete(`${baseUrl}/${id}`, config)
   return response.data
 }
 
-export default { getAll, create, update, remove}
+export default { getAll, create, update, remove }
