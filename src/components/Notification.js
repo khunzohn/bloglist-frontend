@@ -17,7 +17,7 @@ const Notification = (props) => {
     }
   }
   return (
-    <div style={style}>
+    <div id="noti" style={style}>
       {message}
     </div>
   )
