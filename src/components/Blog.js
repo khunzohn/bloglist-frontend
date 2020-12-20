@@ -15,8 +15,8 @@ const Blog = ({ deleteBlog, updateBlog, blog }) => {
   }
 
   const unExpendedBlog = () => (
-    <div style={blogStyle}>
-      {blog.title} <button onClick={toggleState}>view</button>
+    <div style={blogStyle} className="unexpended">
+      {blog.title} {blog.author} <button onClick={toggleState}>view</button>
     </div>
   )
 
@@ -38,10 +38,10 @@ const Blog = ({ deleteBlog, updateBlog, blog }) => {
   }
 
   const expendedBlog = () => (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="expended">
       <div>{blog.title} <button onClick={toggleState}>hide</button></div>
-      <div>{blog.url} </div>
-      <div>Likes {blog.likes} <button onClick={handleLike}>like</button></div>
+      <div className="divUrl">{blog.url} </div>
+      <div className="divLikes">Likes {blog.likes} <button onClick={handleLike}>like</button></div>
       <div>{blog.author}</div>
       <button onClick={handleDelete}>Delete</button>
     </div>
