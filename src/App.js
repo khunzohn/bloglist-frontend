@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useRef} from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-import Notification from "./components/Notification"
+import Notification from "./components/Notification";
+import BlogForm from "./components/BlogFrom";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -10,9 +12,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const blogFormRef = useRef()
 
   useEffect(() => {
     getAllBlogs();
@@ -29,36 +29,26 @@ const App = () => {
     }
   }, []);
 
-  const createBlog = async (event) => {
-    event.preventDefault();
+  const createBlog = async (blog) => {
     try {
-      const createdBlog = await blogService.create(
-        {
-          url: url,
-          title: title,
-          author: author,
-        },
-        user.token
-      );
+      const createdBlog = await blogService.create(blog, user.token);
 
       console.log("created blog", createBlog);
       if (createdBlog) {
         getAllBlogs();
-        setTitle('')
-        setUrl('')
-        setAuthor('')
 
         showNotification({
           message: `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
-          error: false
-        })
+          error: false,
+        });
+        blogFormRef.current.toggleLoginVisible()
       }
     } catch (error) {
       console.log("create blog error", error);
       showNotification({
         message: "Failed to create new blog",
-        error: true
-      })
+        error: true,
+      });
     }
   };
 
@@ -78,8 +68,8 @@ const App = () => {
       console.log("login error", error);
       showNotification({
         message: "Wrong credentials",
-        error: true
-      })
+        error: true,
+      });
     }
   };
 
@@ -88,7 +78,7 @@ const App = () => {
     setTimeout(() => {
       setMessage(null);
     }, 5000);
-  }
+  };
 
   const handleLogout = (event) => {
     event.preventDefault();
@@ -97,11 +87,10 @@ const App = () => {
   };
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <h1>Log in to application</h1>
-
+    <div>
       <Notification notification={message}/>
-
+      <form onSubmit={handleLogin}>
+      <h1>Log in to application</h1>
       <div>
         username
         <input
@@ -127,13 +116,14 @@ const App = () => {
       </div>
       <button type="submit">submit</button>
     </form>
+
+    </div>
   );
 
   const blogList = () => (
     <div>
-      <h2>blogs</h2>
-
       <Notification notification={message}/>
+      <h2>blogs</h2>
 
       <div>
         {user.username} logged in.{" "}
@@ -141,42 +131,10 @@ const App = () => {
       </div>
 
       <div>
-        <h2>Create new</h2>
-        <form onSubmit={createBlog}>
-          <div>
-            title:
-            <input
-              value={title}
-              onChange={({ target }) => {
-                setTitle(target.value);
-              }}
-              name="Title"
-            />
-          </div>
-          <div>
-            author:
-            <input
-              value={author}
-              onChange={({ target }) => {
-                setAuthor(target.value);
-              }}
-              name="Author"
-            />
-          </div>
-
-          <div>
-            url:
-            <input
-              value={url}
-              onChange={({ target }) => {
-                setUrl(target.value);
-              }}
-              name="Title"
-            />
-          </div>
-
-          <button type="submit">create</button>
-        </form>
+        <Togglable cta="new blog" ref={blogFormRef}>
+          <h2>Create new</h2>
+          <BlogForm createBlog={createBlog} />
+        </Togglable>
       </div>
 
       {blogs.map((blog) => (
