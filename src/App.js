@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -12,7 +12,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState(null);
-  const blogFormRef = useRef()
+  const blogFormRef = useRef();
 
   useEffect(() => {
     getAllBlogs();
@@ -29,11 +29,44 @@ const App = () => {
     }
   }, []);
 
+  const updateBlog = async (id, blog) => {
+    try {
+      const updatedBlog = await blogService.update(id, blog, user.token);
+
+      console.log("updated blog", updatedBlog);
+      if (updatedBlog) {
+        getAllBlogs();
+      }
+    } catch (error) {
+      console.log("update blog error", error);
+      showNotification({
+        message: "Failed to update blog",
+        error: true,
+      });
+    }
+  };
+
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.remove(id, user.token);
+
+      console.log("blog deleted");
+      getAllBlogs();
+    } catch (error) {
+      console.log("delete blog error", error);
+      showNotification({
+        message: "Failed to delete blog",
+        error: true,
+      });
+    }
+  };
+
+
   const createBlog = async (blog) => {
     try {
       const createdBlog = await blogService.create(blog, user.token);
 
-      console.log("created blog", createBlog);
+      console.log("created blog", createdBlog);
       if (createdBlog) {
         getAllBlogs();
 
@@ -41,7 +74,7 @@ const App = () => {
           message: `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
           error: false,
         });
-        blogFormRef.current.toggleLoginVisible()
+        blogFormRef.current.toggleLoginVisible();
       }
     } catch (error) {
       console.log("create blog error", error);
@@ -88,41 +121,40 @@ const App = () => {
 
   const loginForm = () => (
     <div>
-      <Notification notification={message}/>
+      <Notification notification={message} />
       <form onSubmit={handleLogin}>
-      <h1>Log in to application</h1>
-      <div>
-        username
-        <input
-          type="text"
-          onChange={({ target }) => {
-            setUsername(target.value);
-          }}
-          value={username}
-          name="Username"
-        />
-      </div>
+        <h1>Log in to application</h1>
+        <div>
+          username
+          <input
+            type="text"
+            onChange={({ target }) => {
+              setUsername(target.value);
+            }}
+            value={username}
+            name="Username"
+          />
+        </div>
 
-      <div>
-        password
-        <input
-          type="password"
-          onChange={({ target }) => {
-            setPassword(target.value);
-          }}
-          name="Password"
-          value={password}
-        />
-      </div>
-      <button type="submit">submit</button>
-    </form>
-
+        <div>
+          password
+          <input
+            type="password"
+            onChange={({ target }) => {
+              setPassword(target.value);
+            }}
+            name="Password"
+            value={password}
+          />
+        </div>
+        <button type="submit">submit</button>
+      </form>
     </div>
   );
 
   const blogList = () => (
     <div>
-      <Notification notification={message}/>
+      <Notification notification={message} />
       <h2>blogs</h2>
 
       <div>
@@ -137,8 +169,8 @@ const App = () => {
         </Togglable>
       </div>
 
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+      {blogs.sort( (a, b) => b.likes - a.likes).map((blog) => (
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} />
       ))}
     </div>
   );
