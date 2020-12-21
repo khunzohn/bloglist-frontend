@@ -41,14 +41,14 @@ const Blog = ({ deleteBlog, updateBlog, blog }) => {
     <div style={blogStyle} className="expended">
       <div>{blog.title} <button onClick={toggleState}>hide</button></div>
       <div className="divUrl">{blog.url} </div>
-      <div className="divLikes">Likes {blog.likes} <button onClick={handleLike}>like</button></div>
+      <div className="divLikes">Likes {blog.likes} <button id="like-button" onClick={handleLike}>like</button></div>
       <div>{blog.author}</div>
-      <button onClick={handleDelete}>Delete</button>
+      <button id='delete-button' onClick={handleDelete}>Delete</button>
     </div>
   )
 
   return (
-    <div>
+    <div className="blog">
       {expended ? expendedBlog() : unExpendedBlog()}
     </div>
   )
